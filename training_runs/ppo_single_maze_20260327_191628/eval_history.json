@@ -1,0 +1,16 @@
+{
+  "evaluations": [
+    {
+      "episodes": 5,
+      "mean_reward": -52.71128813559299,
+      "mean_coverage_ratio": 0.6338983050847458,
+      "mean_steps_used": 313.8,
+      "success_rate": 0.0,
+      "death_rate": 0.4,
+      "timeout_rate": 0.6,
+      "episode_details": [
+        {
+          "episode_reward": -108.77186440677906,
+          "coverage_ratio": 0.7457627118644068,
+          "covered_cells": 44,
+          "coverable_cells": 
