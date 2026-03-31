@@ -73,7 +73,7 @@ env = gymnasium.make(
     activate_game_status=True
 )
 
-model = PPO.load("stage1_just_go", env=env)
+model = PPO.load("./models/stage1_just_go_best/stage1_just_go_best", env=env)
 
 obs, _ = env.reset()
 terminated = False
