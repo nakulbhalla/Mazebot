@@ -9,7 +9,7 @@ vec_env = make_vec_env("just_go", n_envs=4)
 model = PPO(
     "MlpPolicy",
     vec_env,
-    learning_rate=5e-4,
+    learning_rate=3e-4,
     n_steps=1024,
     batch_size=256,
     n_epochs=10,

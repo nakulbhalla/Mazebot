@@ -12,8 +12,14 @@ def observation_space(env: gym.Env) -> gym.spaces.Space:
     """
     # The grid has (10, 10, 3) shape and can store values from 0 to 255 (uint8). To use the whole grid as the
     # observation space, we can consider a MultiDiscrete space with values in the range [0, 256).
-    cell_values = np.full(env.grid.shape, 256, dtype=np.int32)
-    return gym.spaces.MultiDiscrete(cell_values.flatten())
+    obs_size = env.grid.shape[0] * env.grid.shape[1] * env.grid.shape[2]
+    return gym.spaces.Box(
+        low=0.0,
+        high=1.0,
+        shape=(obs_size,),
+        dtype=np.float32
+    )
+
 
 def observation(grid: np.ndarray):
     """
@@ -22,7 +28,7 @@ def observation(grid: np.ndarray):
     # If the observation returned is not the same shape as the observation_space, an error will occur!
     # Make sure to make changes to both functions accordingly.
 
-    return grid.flatten()
+    return grid.astype(np.float32).flatten() / 255.0
 
 
 def reward(info: dict) -> float:
@@ -43,16 +49,27 @@ def reward(info: dict) -> float:
     - new_cell_covered (bool): if a cell previously uncovered was covered on this step
     - game_over (bool) : if the game was terminated because the player was seen by an enemy or not
     """
-    enemies = info["enemies"]
-    agent_pos = info["agent_pos"]
     total_covered_cells = info["total_covered_cells"]
     cells_remaining = info["cells_remaining"]
     coverable_cells = info["coverable_cells"]
-    steps_remaining = info["steps_remaining"]
     new_cell_covered = info["new_cell_covered"]
     game_over = info["game_over"]
 
-    # IMPORTANT: You may design a reward function that uses just some of these values. Experiment with different
-    # rewards and find out what works best for the algorithm you chose given the observation space you are using
+    r = 0.0
 
-    return 0
+    # Encourage exploration
+    if new_cell_covered:
+        r += 1.0
+
+    # Small penalty every step so agent does not wander forever
+    r -= 0.01
+
+    # Strong penalty for dying
+    if game_over:
+        r -= 10.0
+
+    # Bonus for successfully covering the whole map
+    if total_covered_cells == coverable_cells and cells_remaining == 0 and not game_over:
+        r += 20.0
+
+    return r
